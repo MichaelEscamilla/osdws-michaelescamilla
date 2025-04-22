@@ -1,16 +1,15 @@
+########################################
+# Add PortableGit to the Boot Image and Add it to the PATH      
+########################################
+
 # Download PortableGit
 $SaveLocation = "$($env:TEMP)"
 Write-Host -ForegroundColor DarkGray "[$((Get-Date).ToString('HH:mm:ss'))] Downloading PortableGit to: [$($SaveLocation)]"
-$PortableGitDownload = Save-WebFile -SourceUrl 'https://github.com/git-for-windows/git/releases/download/v2.47.1.windows.2/PortableGit-2.47.1.2-64-bit.7z.exe' -DestinationDirectory "$($SaveLocation)"
+$PortableGitDownload = Save-WebFile -SourceUrl 'https://github.com/git-for-windows/git/releases/download/v2.49.0.windows.1/PortableGit-2.49.0-64-bit.7z.exe' -DestinationDirectory "$($SaveLocation)"
 
-# Expand PortableGit
-Write-Host -ForegroundColor DarkGray "[$((Get-Date).ToString('HH:mm:ss'))] Expanding PortalbleGit to BootImage"
-#& "$($PortableGitDownload.FullName)" -y -o"$PSScriptRoot\PortableGit"
+# Run the PortableGit exe and expand it to the Boot Image
+Write-Host -ForegroundColor DarkGray "[$((Get-Date).ToString('HH:mm:ss'))] Expanding PortableGit to BootImage"
 & "$($PortableGitDownload.FullName)" -y -o"$MountPath\PortableGit"
-
-# Expand PortableGit to Boot Image
-#Write-Host -ForegroundColor DarkCyan "[$((Get-Date).ToString('HH:mm:ss'))] Expanding PortalbleGit to BootImage"
-#Expand-Archive -Path "$($PSScriptRoot)\*.zip" -Destination $MountPath
 
 # Add PortableGit PATH to WinPE
 Write-Host -ForegroundColor DarkGray "[$((Get-Date).ToString('HH:mm:ss'))] Adding PortableGit to WinPE PATH"
