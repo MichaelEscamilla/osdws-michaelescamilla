@@ -34,7 +34,7 @@
 	[-Run Synchronous] Default. This command will run and wait for this command to finish before continuing to the next Winpeshl.ini command.
 
 	Update OSD PowerShell
-	powershell, -WindowStyle Hidden -Command Invoke-WpeinitPSModuleUpdate -Name OSD
+	powershell, -WindowStyle Hidden -Command Invoke-WpeinitUpdateModule -Name OSD
 	[-Name OSD] Name of the PowerShell Module to update
 	[-Run Synchronous] Default. This command will run and wait for this command to finish before continuing to the next Winpeshl.ini command.
 	[-WindowStyle Normal] Default.
@@ -64,6 +64,7 @@ $ModuleNames = @('OSD', 'OSDCloud')
 $ModuleNames | ForEach-Object {
 	$ModuleName = $_
 	Write-Host -ForegroundColor DarkGray "[$((Get-Date).ToString('HH:mm:ss'))][$($MyInvocation.MyCommand.Source)] Copy PowerShell Module to BootImage: $ModuleName"
+	# Add a step to install the latest
 	Copy-PSModuleToWindowsImage -Name $ModuleName -Path $MountPath | Out-Null
 }
 #endregion
@@ -71,17 +72,17 @@ $ModuleNames | ForEach-Object {
 #region Startnet.cmd
 $Content = @'
 @echo off
-title MichaelEscamilla - OSDCloud Core
+title OSDCloud Workflow WinPE Startup
 wpeinit
 wpeutil DisableFirewall
 wpeutil UpdateBootInfo
-PowerShell -WindowStyle Hidden -Command Invoke-WpeinitPSCommand Show-WinpeStartOSK -WindowStyle Hidden
-PowerShell -WindowStyle Hidden -Command Invoke-WpeinitPSCommand Show-WinpeStartWindowHardwareErrors -WindowStyle Maximized -NoExit -Wait
-PowerShell -WindowStyle Hidden -Command Invoke-WpeinitPSCommand Show-WinpeStartWindowHardware -WindowStyle Minimized -NoExit
-PowerShell -WindowStyle Hidden -Command Invoke-WpeinitPSCommand Show-WinpeStartWindowWiFi -Wait
-PowerShell -WindowStyle Hidden -Command Invoke-WpeinitPSCommand Show-WinpeStartWindowIPConfig -Run Asynchronous -WindowStyle Minimized -NoExit
-PowerShell -WindowStyle Hidden -Command Invoke-WpeinitPSModuleUpdate -Name OSD -Verbose -Wait
-PowerShell -WindowStyle Hidden -Command Invoke-WpeinitPSCommand Show-WinpeStartWindowDeviceInfo -NoExit -Wait
+powershell.exe -w h -c Invoke-OSDCloudPEStartup OSK
+powershell.exe -w h -c Invoke-OSDCloudPEStartup DeviceHardware
+powershell.exe -w h -c Invoke-OSDCloudPEStartup WiFi
+powershell.exe -w h -c Invoke-OSDCloudPEStartup IPConfig
+powershell.exe -w h -c Invoke-OSDCloudPEStartup UpdateModule -Value OSD
+powershell.exe -w h -c Invoke-OSDCloudPEStartup UpdateModule -Value OSDCloud
+powershell.exe -w h -c Invoke-OSDCloudPEStartup Info
 wpeutil Reboot
 pause
 '@
